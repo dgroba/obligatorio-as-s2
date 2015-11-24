@@ -10,5 +10,22 @@ package uy.com.gameon.dominio;
  * @author w8
  */
 public class Consola {
-    
+    private String nombre;
+    private String fabricante;
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getFabricante() {
+        return fabricante;
+    }
+
+    public void setFabricante(String fabricante) {
+        this.fabricante = fabricante;
+    }
 }
