@@ -27,7 +27,7 @@ public class GeneroResource {
     private GeneroNegocioSBLocal beanGenero;
     
     @GET
-    @Path("/consultarGeneros")
+    @Path("/consultar_generos")
     @Produces(MediaType.APPLICATION_JSON)
     public Response obtenerGeneros() {
         Map<String, Genero> mapGeneros = beanGenero.obtenerGeneros();

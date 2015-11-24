@@ -5,9 +5,9 @@
  */
 package uy.com.gameon.dominio;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement
 public class Usuario {
@@ -19,12 +19,16 @@ public class Usuario {
     private List<Genero> preferenciasGenero;
 
     public Usuario() {
+        this.consolas = new ArrayList<>();
+        this.preferenciasGenero = new ArrayList<>();
     }
 
     public Usuario(String nombre, String apellido, String email) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
+        this.consolas = new ArrayList<>();
+        this.preferenciasGenero = new ArrayList<>();
     }
 
     public Long getId() {
@@ -59,7 +63,6 @@ public class Usuario {
         this.email = email;
     }
 
-    @XmlTransient
     public List<Consola> getConsolas() {
         return consolas;
     }
@@ -68,7 +71,6 @@ public class Usuario {
         this.consolas = consolas;
     }
 
-    @XmlTransient
     public List<Genero> getPreferenciasGenero() {
         return preferenciasGenero;
     }

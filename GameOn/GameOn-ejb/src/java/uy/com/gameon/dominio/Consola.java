@@ -5,10 +5,9 @@
  */
 package uy.com.gameon.dominio;
 
-/**
- *
- * @author w8
- */
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class Consola {
     private String nombre;
     private String fabricante;

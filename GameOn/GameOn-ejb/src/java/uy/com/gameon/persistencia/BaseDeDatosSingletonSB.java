@@ -18,7 +18,7 @@ import uy.com.gameon.dominio.Usuario;
  */
 @Singleton
 public class BaseDeDatosSingletonSB implements BaseDeDatosSingletonSBLocal {
-    public Map<Long, Usuario> usuarios;
+    public Map<String, Usuario> usuarios;
     public Long contadorIdUsuarios;
     public Map<String, Genero> generos;
 
@@ -36,7 +36,7 @@ public class BaseDeDatosSingletonSB implements BaseDeDatosSingletonSBLocal {
     @Override
     public Long agregarUsuario(Usuario usuario){
         usuario.setId(++this.contadorIdUsuarios);
-        this.usuarios.put(usuario.getId(), usuario);
+        this.usuarios.put(usuario.getEmail(), usuario);
         return this.contadorIdUsuarios;
     }
     
@@ -46,14 +46,16 @@ public class BaseDeDatosSingletonSB implements BaseDeDatosSingletonSBLocal {
     }
     
     @Override
-    public Map<Long, Usuario> obtenerUsuarios() {
+    public Map<String, Usuario> obtenerUsuarios() {
         return this.usuarios;
     }
     
     @Override
-    public Usuario obtenerUsuarioPorId(Long idUsuario) {
-        return this.usuarios.get(idUsuario);
+    public Usuario obtenerUsuarioPorEmail(String emailUsuario) {
+        return this.usuarios.get(emailUsuario);
     }
+    
+    
     
     @PostConstruct
     private void init(){

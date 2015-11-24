@@ -19,9 +19,9 @@ public interface BaseDeDatosSingletonSBLocal {
 
     Long agregarUsuario(Usuario usuario);
     
-    Map<Long, Usuario> obtenerUsuarios();
+    Map<String, Usuario> obtenerUsuarios();
     
-    Usuario obtenerUsuarioPorId(Long idUsuario);
+    Usuario obtenerUsuarioPorEmail(String emailUsuario);
 
     void agregarGenero(Genero genero);
 
