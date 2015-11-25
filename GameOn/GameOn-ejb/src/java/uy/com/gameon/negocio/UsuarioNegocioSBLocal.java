@@ -7,6 +7,7 @@ package uy.com.gameon.negocio;
 
 import javax.ejb.Local;
 import uy.com.gameon.dominio.Usuario;
+import uy.com.gameon.excepciones.ConsolaNoExistenteException;
 import uy.com.gameon.excepciones.GeneroNoExistenteException;
 import uy.com.gameon.excepciones.UsuarioNoExistenteException;
 
@@ -18,5 +19,7 @@ public interface UsuarioNegocioSBLocal {
     Usuario obtenerUsuarioPorEmail(String emailUsuario) throws UsuarioNoExistenteException;
 
     void agregarFavorito(String email, String generoFavorito) throws GeneroNoExistenteException;
+
+    void agregarConsola(String email, String codigoConsola) throws ConsolaNoExistenteException;
 
 }

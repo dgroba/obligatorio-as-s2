@@ -16,25 +16,25 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import uy.com.gameon.dominio.Genero;
-import uy.com.gameon.negocio.GeneroNegocioSBLocal;
+import uy.com.gameon.dominio.Consola;
+import uy.com.gameon.negocio.ConsolaNegocioSBLocal;
 
-@Path("generos")
+@Path("consolas")
 @RequestScoped
-public class GeneroResource {
+public class ConsolaResource {
     
     @EJB
-    private GeneroNegocioSBLocal beanGenero;
+    private ConsolaNegocioSBLocal beanConsola;
     
     @GET
-    @Path("/consultar_generos")
+    @Path("/consultar_consolas")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response obtenerGeneros() {
-        Map<String, Genero> mapGeneros = beanGenero.obtenerGeneros();
+    public Response obtenerConsolas() {
+        Map<String, Consola> mapConsolas = beanConsola.obtenerConsolas();
         Gson gson = new Gson();
-        List<Genero> generos = new ArrayList(mapGeneros.values());
+        List<Consola> consolas = new ArrayList(mapConsolas.values());
         
-        return Response.accepted(gson.toJson(generos)).build();
+        return Response.accepted(gson.toJson(consolas)).build();
     }
     
 }

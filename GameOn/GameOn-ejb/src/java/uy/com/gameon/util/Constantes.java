@@ -15,5 +15,7 @@ public class Constantes {
     public final static String mensajeGeneroNoExistenteException = "El género ingresado no es válido.";
     public final static String codErrorUsuarioNoExistenteException = "2";
     public final static String mensajeUsuarioNoExistenteException = "El usuario ingresado no es válido.";
+    public final static String codErrorConsolaNoExistenteException = "3";
+    public final static String mensajeConsolaNoExistenteException = "La consola ingresada no es válida.";
     
 }

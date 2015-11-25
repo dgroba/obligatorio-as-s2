@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
+import uy.com.gameon.dominio.Consola;
 import uy.com.gameon.dominio.Genero;
 import uy.com.gameon.dominio.Usuario;
 
@@ -21,11 +22,18 @@ public class BaseDeDatosSingletonSB implements BaseDeDatosSingletonSBLocal {
     public Map<String, Usuario> usuarios;
     public Long contadorIdUsuarios;
     public Map<String, Genero> generos;
+    public Map<String, Consola> consolas;
 
     public BaseDeDatosSingletonSB() {
         this.contadorIdUsuarios = new Long(0);
         this.usuarios = new HashMap<>();
         this.generos = new HashMap<>();
+        this.consolas = new HashMap<>();
+    }
+    
+    @Override
+    public void agregarConsola(Consola consola) {
+        this.consolas.put(consola.getCodigo(), consola);
     }
     
     @Override
@@ -38,6 +46,11 @@ public class BaseDeDatosSingletonSB implements BaseDeDatosSingletonSBLocal {
         usuario.setId(++this.contadorIdUsuarios);
         this.usuarios.put(usuario.getEmail(), usuario);
         return this.contadorIdUsuarios;
+    }
+    
+    @Override
+    public Map<String, Consola> obtenerConsolas() {
+        return this.consolas;
     }
     
     @Override
@@ -55,8 +68,6 @@ public class BaseDeDatosSingletonSB implements BaseDeDatosSingletonSBLocal {
         return this.usuarios.get(emailUsuario);
     }
     
-    
-    
     @PostConstruct
     private void init(){
         this.agregarUsuario(new Usuario("Nombre 1", "Apellido 1", "email1@icloud.com"));
@@ -67,9 +78,16 @@ public class BaseDeDatosSingletonSB implements BaseDeDatosSingletonSBLocal {
         this.agregarGenero(new Genero("shoot", "Shooter"));
         this.agregarGenero(new Genero("adv", "Adventure"));
         this.agregarGenero(new Genero("sim", "Simulation"));
-        this.agregarGenero(new Genero("str", "strategy"));
+        this.agregarGenero(new Genero("str", "Strategy"));
         this.agregarGenero(new Genero("sp", "Sports"));
         this.agregarGenero(new Genero("rol", "Role Playing"));
+        
+        this.agregarConsola(new Consola("xbx1", "Xbox One", "Microsoft"));
+        this.agregarConsola(new Consola("xbx360", "Xbox 360", "Microsoft"));
+        this.agregarConsola(new Consola("ps4", "PlayStation 4", "Sony"));
+        this.agregarConsola(new Consola("ps3", "PlayStation 3", "Sony"));
+        this.agregarConsola(new Consola("wii", "Wii", "Nintendo"));
+        this.agregarConsola(new Consola("wiiu", "Wii U", "Nintendo"));
     }
 
 }

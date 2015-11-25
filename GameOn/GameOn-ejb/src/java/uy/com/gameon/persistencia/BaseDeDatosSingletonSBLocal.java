@@ -7,6 +7,7 @@ package uy.com.gameon.persistencia;
 
 import java.util.Map;
 import javax.ejb.Local;
+import uy.com.gameon.dominio.Consola;
 import uy.com.gameon.dominio.Genero;
 import uy.com.gameon.dominio.Usuario;
 
@@ -26,5 +27,9 @@ public interface BaseDeDatosSingletonSBLocal {
     void agregarGenero(Genero genero);
 
     Map<String, Genero> obtenerGeneros();
+
+    void agregarConsola(Consola consola);
+
+    Map<String, Consola> obtenerConsolas();
     
 }

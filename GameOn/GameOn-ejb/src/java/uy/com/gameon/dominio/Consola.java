@@ -9,8 +9,24 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Consola {
+    
+    private String codigo;
     private String nombre;
     private String fabricante;
+
+    public Consola(String codigo, String nombre, String fabricante) {
+        this.codigo = codigo;
+        this.nombre = nombre;
+        this.fabricante = fabricante;
+    }
+    
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
 
     public String getNombre() {
         return nombre;

@@ -8,8 +8,10 @@ package uy.com.gameon.negocio;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import uy.com.gameon.dominio.Consola;
 import uy.com.gameon.dominio.Genero;
 import uy.com.gameon.dominio.Usuario;
+import uy.com.gameon.excepciones.ConsolaNoExistenteException;
 import uy.com.gameon.excepciones.GeneroNoExistenteException;
 import uy.com.gameon.excepciones.UsuarioNoExistenteException;
 import uy.com.gameon.persistencia.BaseDeDatosSingletonSBLocal;
@@ -48,6 +50,20 @@ public class UsuarioNegocioSB implements UsuarioNegocioSBLocal {
             usuario.getPreferenciasGenero().add(genero);
         } else {
            throw new GeneroNoExistenteException(Constantes.codErrorGeneroNoExistenteException, Constantes.mensajeGeneroNoExistenteException);
+        }
+    }
+
+    @Override
+    public void agregarConsola(String email, String codigoConsola) throws ConsolaNoExistenteException {
+        Map<String, Consola> mapaConsolas = baseDeDatos.obtenerConsolas();
+        Consola consola = mapaConsolas.get(codigoConsola);
+        Usuario usuario;
+        
+        if (consola != null) {
+            usuario = baseDeDatos.obtenerUsuarioPorEmail(email);
+            usuario.getConsolas().add(consola);
+        } else {
+           throw new ConsolaNoExistenteException(Constantes.codErrorConsolaNoExistenteException, Constantes.mensajeConsolaNoExistenteException);
         }
     }
 
