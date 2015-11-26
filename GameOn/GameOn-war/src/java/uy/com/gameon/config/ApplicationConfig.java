@@ -30,6 +30,7 @@ public class ApplicationConfig extends Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
+        resources.add(uy.com.gameon.servicios.AdministradorResource.class);
         resources.add(uy.com.gameon.servicios.ConsolaResource.class);
         resources.add(uy.com.gameon.servicios.GeneroResource.class);
         resources.add(uy.com.gameon.servicios.UsuarioResource.class);

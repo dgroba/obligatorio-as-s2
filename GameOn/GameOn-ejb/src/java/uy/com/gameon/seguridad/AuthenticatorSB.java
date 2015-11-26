@@ -56,7 +56,11 @@ public class AuthenticatorSB implements AuthenticatorSBLocal {
     public void logout( String emailUsuario, String authToken ) throws GeneralSecurityException {
         if (baseDeDatos.usuarioExistente(emailUsuario)) {
             if (baseDeDatos.usuarioAutenticado(emailUsuario)) {
-                baseDeDatos.agregarUsuarioAutenticado(emailUsuario, authToken);
+                if (authTokenValido(emailUsuario, authToken)) {
+                    baseDeDatos.quitarUsuarioAutenticado(emailUsuario);
+                } else {
+                    throw new LoginException( Constantes.codAutenInvalido );
+                }
             } else {
                 throw new LoginException( Constantes.usuarionSinSesion );
             }

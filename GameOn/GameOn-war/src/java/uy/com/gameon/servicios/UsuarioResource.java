@@ -170,11 +170,16 @@ public class UsuarioResource {
                              @FormParam("apellido") String apellido,
                              @FormParam("password") String password) {
         URI uriOfCreatedResource;
+        JsonObjectBuilder jsonObjBuilder = Json.createObjectBuilder();
+        JsonObject jsonObj;
+        
+        jsonObjBuilder.add( "message", "Usuario registrado correctamente." );
+        jsonObj = jsonObjBuilder.build();
         
         beanUsuario.registro(apellido, apellido, email, password);
         uriOfCreatedResource = URI.create("/GameOn-war/usuarios/" + email);
         
-        return Response.created(uriOfCreatedResource).build();
+        return Response.created(uriOfCreatedResource).entity(jsonObj.toString()).build();
     }
     
     @POST
@@ -187,12 +192,46 @@ public class UsuarioResource {
             Gson gson = new Gson();
             String authToken = beanAuthenticator.login(email, password);
             
-            return Response.ok(gson.toJson(authToken)).build();
+            return Response.ok(gson.toJson("auth_token: " + authToken)).build();
         } catch (LoginException ex) {
             Logger.getLogger(UsuarioResource.class.getName()).log(Level.SEVERE, ex.getMessage());
             JsonObjectBuilder jsonObjBuilder = Json.createObjectBuilder();
             jsonObjBuilder.add( "message", "Contraseña incorrecta." );
             JsonObject jsonObj = jsonObjBuilder.build();
+            
+            return Response.status(Response.Status.UNAUTHORIZED).entity(jsonObj.toString()).build();
+        }
+    }
+    
+    @POST
+    @Path("/logout")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response logout(@Context HttpHeaders httpHeaders,
+                            @FormParam("email") String email){
+        JsonObjectBuilder jsonObjBuilder; 
+        JsonObject jsonObj;
+        
+        try {
+            Gson gson = new Gson();
+            String authToken = httpHeaders.getHeaderString( HTTPHeaderNames.AUTH_TOKEN );
+            beanAuthenticator.logout(email, authToken);jsonObjBuilder = Json.createObjectBuilder();
+            jsonObjBuilder.add( "message", "Usuario: " + email + " ha culminado su sesión.");
+            jsonObj = jsonObjBuilder.build();
+            
+            return Response.ok(gson.toJson(jsonObj)).build();
+        } catch (LoginException ex) {
+            Logger.getLogger(UsuarioResource.class.getName()).log(Level.SEVERE, ex.getMessage());
+            jsonObjBuilder = Json.createObjectBuilder();
+            jsonObjBuilder.add( "message", ex.getMessage() );
+            jsonObj = jsonObjBuilder.build();
+            
+            return Response.status(Response.Status.UNAUTHORIZED).entity(jsonObj.toString()).build();
+        } catch (GeneralSecurityException ex) {
+            jsonObjBuilder = Json.createObjectBuilder();
+            jsonObjBuilder.add( "message", ex.getMessage() );
+            jsonObj = jsonObjBuilder.build();
+            Logger.getLogger(UsuarioResource.class.getName()).log(Level.SEVERE, ex.getMessage());
             
             return Response.status(Response.Status.UNAUTHORIZED).entity(jsonObj.toString()).build();
         }
