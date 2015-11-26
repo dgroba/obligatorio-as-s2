@@ -18,11 +18,11 @@ public class Constantes {
     public final static String codErrorConsolaNoExistenteException = "3";
     public final static String mensajeConsolaNoExistenteException = "Código de consola inexistente";
     
-    //Mensajes de errores de excepciones
+    //Mensajes de errores de excepciones de Login
     public final static String usuarioConSesion = "Usuario ya posee sesión.";
     public final static String usuarionSinSesion = "Usuario no posee sesión.";
     public final static String passIncorrecto = "Contraseña incorrecta.";
     public final static String usuarionNoReg = "Usuario no registrado.";
-    public final static String codGeneroNoExistente = "Código de genero inexistente.";
+    public final static String codAutenInvalido = "Código de autenticación inválido.";
     
 }

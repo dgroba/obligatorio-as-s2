@@ -32,8 +32,8 @@ import uy.com.gameon.excepciones.ConsolaNoExistenteException;
 import uy.com.gameon.excepciones.GeneroNoExistenteException;
 import uy.com.gameon.excepciones.UsuarioNoExistenteException;
 import uy.com.gameon.negocio.UsuarioNegocioSBLocal;
-import uy.com.gameon.security.HTTPHeaderNames;
 import uy.com.gameon.seguridad.AuthenticatorSBLocal;
+import uy.com.gameon.util.Constantes;
 
 @Path("usuarios")
 @RequestScoped
@@ -49,24 +49,38 @@ public class UsuarioResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response agregarFavorito(@FormParam("email") String email,
-                                @FormParam("generoFavorito") String favorito){
+                                @FormParam("generoFavorito") String favorito,
+                                @Context HttpHeaders httpHeaders){
         JsonObjectBuilder jsonObjBuilder = Json.createObjectBuilder();
         JsonObject jsonObj;
+        String authToken = httpHeaders.getHeaderString( HTTPHeaderNames.AUTH_TOKEN );
+        Usuario usuario;
+        Gson gson = new Gson();
         
         try {
-            Usuario usuario;
-            Gson gson = new Gson();
-            
-            beanUsuario.agregarFavorito(email, favorito);
-            usuario = beanUsuario.obtenerUsuarioPorEmail(email);
-            
-            return Response.ok(gson.toJson(usuario)).build();
+            if (beanAuthenticator.authTokenValido(email, authToken)) {
+                beanUsuario.agregarFavorito(email, favorito);
+                usuario = beanUsuario.obtenerUsuarioPorEmail(email);
+                
+                return Response.ok(gson.toJson(usuario)).build();
+            } else {
+                jsonObjBuilder.add( "message", Constantes.codAutenInvalido );
+                jsonObj = jsonObjBuilder.build();
+                
+                return Response.status(Response.Status.UNAUTHORIZED).entity(jsonObj.toString()).build();
+            }
         } catch (GeneroNoExistenteException | UsuarioNoExistenteException ex) {
             Logger.getLogger(UsuarioResource.class.getName()).log(Level.SEVERE, ex.getMessage());
             jsonObjBuilder.add( "message", ex.getMessage() );
             jsonObj = jsonObjBuilder.build();
             
             return Response.notAcceptable(null).entity(jsonObj.toString()).build();
+        } catch (GeneralSecurityException ex) {
+            jsonObjBuilder.add( "message", ex.getMessage() );
+            jsonObj = jsonObjBuilder.build();
+            Logger.getLogger(UsuarioResource.class.getName()).log(Level.SEVERE, ex.getMessage());
+            
+            return Response.status(Response.Status.UNAUTHORIZED).entity(jsonObj.toString()).build();
         }
        
     }
@@ -76,23 +90,38 @@ public class UsuarioResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response agregarConsola(@FormParam("email") String email,
-                                @FormParam("consola") String codConsola){
+                                @FormParam("consola") String codConsola,
+                                @Context HttpHeaders httpHeaders){
         Usuario usuario;
         Gson gson = new Gson();
         JsonObjectBuilder jsonObjBuilder = Json.createObjectBuilder();
         JsonObject jsonObj;
+        String authToken = httpHeaders.getHeaderString( HTTPHeaderNames.AUTH_TOKEN );
         
         try {
-            beanUsuario.agregarConsola(email, codConsola);
-            usuario = beanUsuario.obtenerUsuarioPorEmail(email);
-            
-            return Response.ok(gson.toJson(usuario)).build();
+            if (beanAuthenticator.authTokenValido(email, authToken)) {
+                beanUsuario.agregarConsola(email, codConsola);
+                usuario = beanUsuario.obtenerUsuarioPorEmail(email);
+
+                return Response.ok(gson.toJson(usuario)).build();
+            } else {
+                jsonObjBuilder.add( "message", Constantes.codAutenInvalido );
+                jsonObj = jsonObjBuilder.build();
+                
+                return Response.status(Response.Status.UNAUTHORIZED).entity(jsonObj.toString()).build();
+            }
         } catch (ConsolaNoExistenteException | UsuarioNoExistenteException ex) {
             Logger.getLogger(UsuarioResource.class.getName()).log(Level.SEVERE, ex.getMessage());
             jsonObjBuilder.add( "message", ex.getMessage() );
             jsonObj = jsonObjBuilder.build();
             
             return Response.notAcceptable(null).entity(jsonObj.toString()).build();
+        } catch (GeneralSecurityException ex) {
+            jsonObjBuilder.add( "message", ex.getMessage() );
+            jsonObj = jsonObjBuilder.build();
+            Logger.getLogger(UsuarioResource.class.getName()).log(Level.SEVERE, ex.getMessage());
+            
+            return Response.status(Response.Status.UNAUTHORIZED).entity(jsonObj.toString()).build();
         }
     }
     
@@ -113,18 +142,19 @@ public class UsuarioResource {
                 
                 return Response.accepted(gson.toJson(usuario)).build();
             } else {
-                jsonObjBuilder.add( "message", "Código de autorización inc." );
+                jsonObjBuilder.add( "message", Constantes.codAutenInvalido );
                 jsonObj = jsonObjBuilder.build();
+                
                 return Response.status(Response.Status.UNAUTHORIZED).entity(jsonObj.toString()).build();
             }
         } catch (UsuarioNoExistenteException ex) {
-            jsonObjBuilder.add( "message", "Contraseña incorrecta." );
+            jsonObjBuilder.add( "message", ex.getMessage() );
             jsonObj = jsonObjBuilder.build();
             Logger.getLogger(UsuarioResource.class.getName()).log(Level.SEVERE, ex.getMessage());
             
             return Response.noContent().entity(jsonObj.toString()).build();
         } catch (GeneralSecurityException ex) {
-            jsonObjBuilder.add( "message", "Contraseña incorrecta." );
+            jsonObjBuilder.add( "message", ex.getMessage() );
             jsonObj = jsonObjBuilder.build();
             Logger.getLogger(UsuarioResource.class.getName()).log(Level.SEVERE, ex.getMessage());
             
