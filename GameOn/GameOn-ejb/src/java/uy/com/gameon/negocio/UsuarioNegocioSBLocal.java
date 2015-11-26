@@ -14,7 +14,7 @@ import uy.com.gameon.excepciones.UsuarioNoExistenteException;
 @Local
 public interface UsuarioNegocioSBLocal {
 
-    Long registro(String nombre, String apellido, String email);
+    Long registro(String nombre, String apellido, String email, String password);
 
     Usuario obtenerUsuarioPorEmail(String emailUsuario) throws UsuarioNoExistenteException;
 

@@ -7,10 +7,15 @@ package uy.com.gameon.servicios;
 
 import com.google.gson.Gson;
 import java.net.URI;
+import java.security.GeneralSecurityException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.faces.bean.RequestScoped;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.security.auth.login.LoginException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -18,6 +23,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import uy.com.gameon.dominio.Usuario;
@@ -25,6 +32,8 @@ import uy.com.gameon.excepciones.ConsolaNoExistenteException;
 import uy.com.gameon.excepciones.GeneroNoExistenteException;
 import uy.com.gameon.excepciones.UsuarioNoExistenteException;
 import uy.com.gameon.negocio.UsuarioNegocioSBLocal;
+import uy.com.gameon.security.HTTPHeaderNames;
+import uy.com.gameon.seguridad.AuthenticatorSBLocal;
 
 @Path("usuarios")
 @RequestScoped
@@ -32,25 +41,34 @@ public class UsuarioResource {
     
     @EJB
     private UsuarioNegocioSBLocal beanUsuario;
-
+    @EJB
+    private AuthenticatorSBLocal beanAuthenticator;
+    
     @POST
     @Path("/agregar_favorito")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response agregarFavorito(@FormParam("email") String email,
                                 @FormParam("generoFavorito") String favorito){
-        Usuario usuario;
-        Gson gson = new Gson();
+        JsonObjectBuilder jsonObjBuilder = Json.createObjectBuilder();
+        JsonObject jsonObj;
+        
         try {
+            Usuario usuario;
+            Gson gson = new Gson();
+            
             beanUsuario.agregarFavorito(email, favorito);
             usuario = beanUsuario.obtenerUsuarioPorEmail(email);
             
             return Response.ok(gson.toJson(usuario)).build();
         } catch (GeneroNoExistenteException | UsuarioNoExistenteException ex) {
             Logger.getLogger(UsuarioResource.class.getName()).log(Level.SEVERE, ex.getMessage());
-           
-            return Response.notAcceptable(null).build();
+            jsonObjBuilder.add( "message", ex.getMessage() );
+            jsonObj = jsonObjBuilder.build();
+            
+            return Response.notAcceptable(null).entity(jsonObj.toString()).build();
         }
+       
     }
     
     @POST
@@ -61,6 +79,9 @@ public class UsuarioResource {
                                 @FormParam("consola") String codConsola){
         Usuario usuario;
         Gson gson = new Gson();
+        JsonObjectBuilder jsonObjBuilder = Json.createObjectBuilder();
+        JsonObject jsonObj;
+        
         try {
             beanUsuario.agregarConsola(email, codConsola);
             usuario = beanUsuario.obtenerUsuarioPorEmail(email);
@@ -68,25 +89,46 @@ public class UsuarioResource {
             return Response.ok(gson.toJson(usuario)).build();
         } catch (ConsolaNoExistenteException | UsuarioNoExistenteException ex) {
             Logger.getLogger(UsuarioResource.class.getName()).log(Level.SEVERE, ex.getMessage());
+            jsonObjBuilder.add( "message", ex.getMessage() );
+            jsonObj = jsonObjBuilder.build();
             
-            return Response.notAcceptable(null).build();
+            return Response.notAcceptable(null).entity(jsonObj.toString()).build();
         }
     }
     
     @GET
     @Path("/{emailUsuario}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response obtenerUsuarioPorEmail(@PathParam("emailUsuario") String emailUsuario) {
+    public Response obtenerUsuarioPorEmail(@Context HttpHeaders httpHeaders,
+                                            @PathParam("emailUsuario") String emailUsuario) {
         Usuario usuario;
         Gson gson = new Gson();
+        String authToken = httpHeaders.getHeaderString( HTTPHeaderNames.AUTH_TOKEN );
+        JsonObjectBuilder jsonObjBuilder = Json.createObjectBuilder();
+        JsonObject jsonObj;
+        
         try {
-            usuario = beanUsuario.obtenerUsuarioPorEmail(emailUsuario);
-            
-            return Response.accepted(gson.toJson(usuario)).build();
+            if (beanAuthenticator.authTokenValido(emailUsuario, authToken)) {
+                usuario = beanUsuario.obtenerUsuarioPorEmail(emailUsuario);
+                
+                return Response.accepted(gson.toJson(usuario)).build();
+            } else {
+                jsonObjBuilder.add( "message", "Código de autorización inc." );
+                jsonObj = jsonObjBuilder.build();
+                return Response.status(Response.Status.UNAUTHORIZED).entity(jsonObj.toString()).build();
+            }
         } catch (UsuarioNoExistenteException ex) {
+            jsonObjBuilder.add( "message", "Contraseña incorrecta." );
+            jsonObj = jsonObjBuilder.build();
             Logger.getLogger(UsuarioResource.class.getName()).log(Level.SEVERE, ex.getMessage());
             
-            return Response.noContent().build();
+            return Response.noContent().entity(jsonObj.toString()).build();
+        } catch (GeneralSecurityException ex) {
+            jsonObjBuilder.add( "message", "Contraseña incorrecta." );
+            jsonObj = jsonObjBuilder.build();
+            Logger.getLogger(UsuarioResource.class.getName()).log(Level.SEVERE, ex.getMessage());
+            
+            return Response.status(Response.Status.UNAUTHORIZED).entity(jsonObj.toString()).build();
         }     
     }
     
@@ -95,13 +137,35 @@ public class UsuarioResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response registro(@FormParam("email") String email,
                              @FormParam("nombre") String nombre,
-                             @FormParam("apellido") String apellido) {
+                             @FormParam("apellido") String apellido,
+                             @FormParam("password") String password) {
         URI uriOfCreatedResource;
         
-        beanUsuario.registro(apellido, apellido, email);
+        beanUsuario.registro(apellido, apellido, email, password);
         uriOfCreatedResource = URI.create("/GameOn-war/usuarios/" + email);
         
         return Response.created(uriOfCreatedResource).build();
+    }
+    
+    @POST
+    @Path("/login")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response login(@FormParam("email") String email,
+                            @FormParam("password") String password){
+        try {
+            Gson gson = new Gson();
+            String authToken = beanAuthenticator.login(email, password);
+            
+            return Response.ok(gson.toJson(authToken)).build();
+        } catch (LoginException ex) {
+            Logger.getLogger(UsuarioResource.class.getName()).log(Level.SEVERE, ex.getMessage());
+            JsonObjectBuilder jsonObjBuilder = Json.createObjectBuilder();
+            jsonObjBuilder.add( "message", "Contraseña incorrecta." );
+            JsonObject jsonObj = jsonObjBuilder.build();
+            
+            return Response.status(Response.Status.UNAUTHORIZED).entity(jsonObj.toString()).build();
+        }
     }
     
 }

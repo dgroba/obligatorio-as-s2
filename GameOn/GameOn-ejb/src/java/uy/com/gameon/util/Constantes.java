@@ -12,10 +12,17 @@ package uy.com.gameon.util;
 public class Constantes {
     
     public final static String codErrorGeneroNoExistenteException = "1";
-    public final static String mensajeGeneroNoExistenteException = "El género ingresado no es válido.";
+    public final static String mensajeGeneroNoExistenteException = "Código de genero inexistente.";
     public final static String codErrorUsuarioNoExistenteException = "2";
-    public final static String mensajeUsuarioNoExistenteException = "El usuario ingresado no es válido.";
+    public final static String mensajeUsuarioNoExistenteException = "Usuario inexistente";
     public final static String codErrorConsolaNoExistenteException = "3";
-    public final static String mensajeConsolaNoExistenteException = "La consola ingresada no es válida.";
+    public final static String mensajeConsolaNoExistenteException = "Código de consola inexistente";
+    
+    //Mensajes de errores de excepciones
+    public final static String usuarioConSesion = "Usuario ya posee sesión.";
+    public final static String usuarionSinSesion = "Usuario no posee sesión.";
+    public final static String passIncorrecto = "Contraseña incorrecta.";
+    public final static String usuarionNoReg = "Usuario no registrado.";
+    public final static String codGeneroNoExistente = "Código de genero inexistente.";
     
 }

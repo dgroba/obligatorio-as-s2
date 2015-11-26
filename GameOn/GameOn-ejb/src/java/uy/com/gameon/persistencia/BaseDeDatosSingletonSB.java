@@ -23,12 +23,14 @@ public class BaseDeDatosSingletonSB implements BaseDeDatosSingletonSBLocal {
     public Long contadorIdUsuarios;
     public Map<String, Genero> generos;
     public Map<String, Consola> consolas;
+    public Map<String, String> usuariosAutenticados;
 
     public BaseDeDatosSingletonSB() {
         this.contadorIdUsuarios = new Long(0);
         this.usuarios = new HashMap<>();
         this.generos = new HashMap<>();
         this.consolas = new HashMap<>();
+        this.usuariosAutenticados = new HashMap<>();
     }
     
     @Override
@@ -68,11 +70,28 @@ public class BaseDeDatosSingletonSB implements BaseDeDatosSingletonSBLocal {
         return this.usuarios.get(emailUsuario);
     }
     
+    @Override
+    public void agregarUsuarioAutenticado(String emailUsuario, String authKey) {
+        this.usuariosAutenticados.put(emailUsuario, authKey);
+    }
+    
+    @Override
+    public void quitarUsuarioAutenticado(String emailUsuario) {
+        if (usuariosAutenticados.containsKey(emailUsuario)) {
+            this.usuariosAutenticados.remove(emailUsuario);
+        }
+    }
+    
+    @Override
+    public Boolean usuarioAutenticado(String emailUsuairo) {
+        return this.usuariosAutenticados.containsKey(emailUsuairo);
+    }
+    
     @PostConstruct
     private void init(){
-        this.agregarUsuario(new Usuario("Nombre 1", "Apellido 1", "email1@icloud.com"));
-        this.agregarUsuario(new Usuario("Nombre 2", "Apellido 2", "email2@icloud.com"));
-        this.agregarUsuario(new Usuario("Nombre 3", "Apellido 3", "email3@icloud.com"));
+        this.agregarUsuario(new Usuario("Nombre 1", "Apellido 1", "email1@icloud.com", "pass1"));
+        this.agregarUsuario(new Usuario("Nombre 2", "Apellido 2", "email2@icloud.com", "pass2"));
+        this.agregarUsuario(new Usuario("Nombre 3", "Apellido 3", "email3@icloud.com", "pass3"));
         
         this.agregarGenero(new Genero("act", "Action"));
         this.agregarGenero(new Genero("shoot", "Shooter"));
@@ -90,4 +109,29 @@ public class BaseDeDatosSingletonSB implements BaseDeDatosSingletonSBLocal {
         this.agregarConsola(new Consola("wiiu", "Wii U", "Nintendo"));
     }
 
+    @Override
+    public Boolean usuarioExistente(String emailUsuario) {
+        return this.usuarios.containsKey(emailUsuario);
+    }
+
+    /**
+     * 
+     * @param emailUsuario Usuario existente
+     * @param password
+     * @return 
+     */
+    @Override
+    public Boolean passwordCorrecto(String emailUsuario, String password) {
+        return this.usuarios.get(emailUsuario).getPassword().equals(password);
+    }
+
+    @Override
+    public Boolean authTokenValido(String authToken, String emailUsuario) {
+        if (this.usuariosAutenticados.containsKey(emailUsuario)) {
+            return this.usuariosAutenticados.get(emailUsuario).equals(authToken);
+        } else {
+            return false;
+        }
+    }
+    
 }

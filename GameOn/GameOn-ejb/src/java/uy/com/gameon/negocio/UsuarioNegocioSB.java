@@ -24,8 +24,8 @@ public class UsuarioNegocioSB implements UsuarioNegocioSBLocal {
     private BaseDeDatosSingletonSBLocal baseDeDatos;
     
     @Override
-    public Long registro(String nombre, String apellido, String email) {
-        return baseDeDatos.agregarUsuario(new Usuario(nombre, apellido, email));
+    public Long registro(String nombre, String apellido, String email, String password) {
+        return baseDeDatos.agregarUsuario(new Usuario(nombre, apellido, email, password));
     }
     
     @Override

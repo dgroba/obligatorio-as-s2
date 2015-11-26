@@ -31,5 +31,17 @@ public interface BaseDeDatosSingletonSBLocal {
     void agregarConsola(Consola consola);
 
     Map<String, Consola> obtenerConsolas();
+
+    void agregarUsuarioAutenticado(String emailUsuario, String authKey);
+
+    void quitarUsuarioAutenticado(String emailUsuario);
+
+    Boolean usuarioAutenticado(String emailUsuairo);
+
+    Boolean usuarioExistente(String emailUsuario);
+
+    Boolean passwordCorrecto(String emailUsuario, String password);
+
+    Boolean authTokenValido(String authToken, String emailUsuario);
     
 }
