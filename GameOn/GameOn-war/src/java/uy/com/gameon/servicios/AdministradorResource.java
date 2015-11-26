@@ -5,6 +5,7 @@
  */
 package uy.com.gameon.servicios;
 
+import com.google.gson.Gson;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,8 +14,11 @@ import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
-import javax.jms.Queue;
 import javax.jms.Session;
+import javax.jms.Topic;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.ws.rs.Consumes;
@@ -36,7 +40,7 @@ import javax.ws.rs.core.Response;
 public class AdministradorResource {
     
     @POST
-    @Path("/agregar_favorito")
+    @Path("/agregar_novedad")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response agregarFavorito(@FormParam("genero") String genero,
@@ -44,6 +48,7 @@ public class AdministradorResource {
                                 @FormParam("descripcion") String descripcion,
                                 @Context HttpHeaders httpHeaders){
         try {
+            Gson gson = new Gson();
             //Seteo las Properties para el contexto
             Properties props = new Properties(); 
             props.setProperty("java.naming.factory.initial", "com.sun.enterprise.naming.SerialInitContextFactory");
@@ -56,7 +61,7 @@ public class AdministradorResource {
             // Obtenemos a traves del servicio JNDI la ConnectionFactory del // servidor de aplicaciones
             ConnectionFactory connectionFactory = (ConnectionFactory) ic.lookup("jms/topicFactory"); // Obtenemos a traves del servicio JNDI la "destination" que vamos
             // a utilizar, en este caso un Topic
-            Queue queue = (Queue) ic.lookup("jms/Topic");
+            Topic queue = (Topic) ic.lookup("jms/Topic");
             //Creo la Connection mediante la ConnectionFactory
             Connection connection = connectionFactory.createConnection();
             //Creo la Session mediante la Connection
@@ -70,14 +75,17 @@ public class AdministradorResource {
             mm.setStringProperty("Consola", consola);
             
             messageProducer.send(mm);
+            
+            return Response.ok(gson.toJson("Novedad enviada a Tópico")).build();
         } catch (NamingException | JMSException ex) {
             Logger.getLogger(AdministradorResource.class.getName()).log(Level.SEVERE, ex.getMessage());
-        }
-        
-       
+            JsonObjectBuilder jsonObjBuilder = Json.createObjectBuilder();
+            JsonObject jsonObj;
+            jsonObjBuilder.add( "message", ex.getMessage() );
+            jsonObj = jsonObjBuilder.build();
             
-        return Response.status(Response.Status.UNAUTHORIZED).entity("").build();
-        
+            return Response.notAcceptable(null).entity(jsonObj.toString()).build();
+        }
        
     }
     

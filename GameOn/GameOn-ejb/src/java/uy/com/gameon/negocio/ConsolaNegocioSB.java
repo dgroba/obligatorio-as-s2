@@ -19,6 +19,7 @@ public class ConsolaNegocioSB implements ConsolaNegocioSBLocal {
 
     @Override
     public Map<String, Consola> obtenerConsolas() {
+        assert baseDeDatos != null;
         return baseDeDatos.obtenerConsolas();
     }
  

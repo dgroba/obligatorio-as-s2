@@ -5,7 +5,9 @@
  */
 package uy.com.gameon.persistencia;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
@@ -89,9 +91,9 @@ public class BaseDeDatosSingletonSB implements BaseDeDatosSingletonSBLocal {
     
     @PostConstruct
     private void init(){
-        this.agregarUsuario(new Usuario("Nombre 1", "Apellido 1", "email1@icloud.com", "pass1"));
-        this.agregarUsuario(new Usuario("Nombre 2", "Apellido 2", "email2@icloud.com", "pass2"));
-        this.agregarUsuario(new Usuario("Nombre 3", "Apellido 3", "email3@icloud.com", "pass3"));
+        this.agregarUsuario(new Usuario("Nombre 1", "Apellido 1", "dn.groba@icloud.com", "pass1"));
+        this.agregarUsuario(new Usuario("Nombre 2", "Apellido 2", "dn.groba@gmail.com", "pass2"));
+        this.agregarUsuario(new Usuario("Nombre 3", "Apellido 3", "marime1990@gmail.com", "pass3"));
         
         this.agregarGenero(new Genero("act", "Action"));
         this.agregarGenero(new Genero("shoot", "Shooter"));
@@ -107,6 +109,10 @@ public class BaseDeDatosSingletonSB implements BaseDeDatosSingletonSBLocal {
         this.agregarConsola(new Consola("ps3", "PlayStation 3", "Sony"));
         this.agregarConsola(new Consola("wii", "Wii", "Nintendo"));
         this.agregarConsola(new Consola("wiiu", "Wii U", "Nintendo"));
+        
+        this.obtenerUsuarioPorEmail("dn.groba@icloud.com").getConsolas().add(new Consola("xbx1", "Xbox One", "Microsoft"));
+        this.obtenerUsuarioPorEmail("dn.groba@gmail.com").getPreferenciasGenero().add(new Genero("sim", "Simulation"));
+        this.obtenerUsuarioPorEmail("marime1990@gmail.com").getPreferenciasGenero().add(new Genero("sim", "Simulation"));
     }
 
     @Override
@@ -132,6 +138,23 @@ public class BaseDeDatosSingletonSB implements BaseDeDatosSingletonSBLocal {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public List<Usuario> obtenerUsuariosPorConsolaGenero(String consola, String genero) {
+        List<Usuario> listaUsuarios = new ArrayList<>();
+        List<Consola> listaConsolas;
+        List<Genero> listaGeneros;
+        
+        for (Map.Entry<String, Usuario> usuario : this.usuarios.entrySet()) {
+            listaConsolas = usuario.getValue().getConsolas();
+            listaGeneros = usuario.getValue().getPreferenciasGenero();
+            if (listaConsolas.contains(new Consola(consola)) || listaGeneros.contains(new Genero(genero))){
+                listaUsuarios.add(usuario.getValue());
+            }
+        }
+        
+        return listaUsuarios;
     }
     
 }

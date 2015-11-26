@@ -58,7 +58,9 @@ public class UsuarioResource {
         Gson gson = new Gson();
         
         try {
+            assert beanAuthenticator != null;
             if (beanAuthenticator.authTokenValido(email, authToken)) {
+                assert beanUsuario != null;
                 beanUsuario.agregarFavorito(email, favorito);
                 usuario = beanUsuario.obtenerUsuarioPorEmail(email);
                 
@@ -99,7 +101,9 @@ public class UsuarioResource {
         String authToken = httpHeaders.getHeaderString( HTTPHeaderNames.AUTH_TOKEN );
         
         try {
+            assert beanAuthenticator != null;
             if (beanAuthenticator.authTokenValido(email, authToken)) {
+                assert beanUsuario != null;
                 beanUsuario.agregarConsola(email, codConsola);
                 usuario = beanUsuario.obtenerUsuarioPorEmail(email);
 
@@ -137,7 +141,9 @@ public class UsuarioResource {
         JsonObject jsonObj;
         
         try {
+            assert beanAuthenticator != null;
             if (beanAuthenticator.authTokenValido(emailUsuario, authToken)) {
+                assert beanUsuario != null;
                 usuario = beanUsuario.obtenerUsuarioPorEmail(emailUsuario);
                 
                 return Response.accepted(gson.toJson(usuario)).build();
@@ -176,6 +182,7 @@ public class UsuarioResource {
         jsonObjBuilder.add( "message", "Usuario registrado correctamente." );
         jsonObj = jsonObjBuilder.build();
         
+        assert beanUsuario != null;
         beanUsuario.registro(apellido, apellido, email, password);
         uriOfCreatedResource = URI.create("/GameOn-war/usuarios/" + email);
         
@@ -190,13 +197,15 @@ public class UsuarioResource {
                             @FormParam("password") String password){
         try {
             Gson gson = new Gson();
+            
+            assert beanAuthenticator != null;
             String authToken = beanAuthenticator.login(email, password);
             
             return Response.ok(gson.toJson("auth_token: " + authToken)).build();
         } catch (LoginException ex) {
             Logger.getLogger(UsuarioResource.class.getName()).log(Level.SEVERE, ex.getMessage());
             JsonObjectBuilder jsonObjBuilder = Json.createObjectBuilder();
-            jsonObjBuilder.add( "message", "Contraseña incorrecta." );
+            jsonObjBuilder.add( "message", ex.getMessage() );
             JsonObject jsonObj = jsonObjBuilder.build();
             
             return Response.status(Response.Status.UNAUTHORIZED).entity(jsonObj.toString()).build();
@@ -215,6 +224,8 @@ public class UsuarioResource {
         try {
             Gson gson = new Gson();
             String authToken = httpHeaders.getHeaderString( HTTPHeaderNames.AUTH_TOKEN );
+            
+            assert beanAuthenticator != null;
             beanAuthenticator.logout(email, authToken);jsonObjBuilder = Json.createObjectBuilder();
             jsonObjBuilder.add( "message", "Usuario: " + email + " ha culminado su sesión.");
             jsonObj = jsonObjBuilder.build();

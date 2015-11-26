@@ -5,6 +5,7 @@
  */
 package uy.com.gameon.dominio;
 
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -19,7 +20,11 @@ public class Consola {
         this.nombre = nombre;
         this.fabricante = fabricante;
     }
-    
+
+    public Consola(String codigo) {
+        this.codigo = codigo;
+    }
+
     public String getCodigo() {
         return codigo;
     }
@@ -43,4 +48,28 @@ public class Consola {
     public void setFabricante(String fabricante) {
         this.fabricante = fabricante;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 83 * hash + Objects.hashCode(this.codigo);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Consola other = (Consola) obj;
+        if (!Objects.equals(this.codigo, other.codigo)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 }

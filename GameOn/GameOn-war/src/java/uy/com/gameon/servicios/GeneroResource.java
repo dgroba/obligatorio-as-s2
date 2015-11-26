@@ -30,6 +30,7 @@ public class GeneroResource {
     @Path("/consultar_generos")
     @Produces(MediaType.APPLICATION_JSON)
     public Response obtenerGeneros() {
+        assert beanGenero != null;
         Map<String, Genero> mapGeneros = beanGenero.obtenerGeneros();
         Gson gson = new Gson();
         List<Genero> generos = new ArrayList(mapGeneros.values());

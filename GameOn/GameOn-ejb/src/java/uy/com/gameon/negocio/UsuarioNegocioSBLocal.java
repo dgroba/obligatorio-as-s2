@@ -5,6 +5,7 @@
  */
 package uy.com.gameon.negocio;
 
+import java.util.List;
 import javax.ejb.Local;
 import uy.com.gameon.dominio.Usuario;
 import uy.com.gameon.excepciones.ConsolaNoExistenteException;
@@ -21,5 +22,7 @@ public interface UsuarioNegocioSBLocal {
     void agregarFavorito(String email, String generoFavorito) throws GeneroNoExistenteException;
 
     void agregarConsola(String email, String codigoConsola) throws ConsolaNoExistenteException;
+
+    List<Usuario> obtenerUsuariosPorConsolaGenero(String consola, String genero);
 
 }

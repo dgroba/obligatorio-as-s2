@@ -19,6 +19,7 @@ public class GeneroNegocioSB implements GeneroNegocioSBLocal {
 
     @Override
     public Map<String, Genero> obtenerGeneros() {
+        assert baseDeDatos != null;
         return baseDeDatos.obtenerGeneros();
     }
     

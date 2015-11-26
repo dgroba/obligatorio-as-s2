@@ -5,6 +5,7 @@
  */
 package uy.com.gameon.negocio;
 
+import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -25,11 +26,13 @@ public class UsuarioNegocioSB implements UsuarioNegocioSBLocal {
     
     @Override
     public Long registro(String nombre, String apellido, String email, String password) {
+        assert baseDeDatos != null;
         return baseDeDatos.agregarUsuario(new Usuario(nombre, apellido, email, password));
     }
     
     @Override
     public Usuario obtenerUsuarioPorEmail(String emailUsuario) throws UsuarioNoExistenteException {
+        assert baseDeDatos != null;
         Usuario usuario = baseDeDatos.obtenerUsuarioPorEmail(emailUsuario);
         
         if (usuario == null) {
@@ -41,6 +44,7 @@ public class UsuarioNegocioSB implements UsuarioNegocioSBLocal {
 
     @Override
     public void agregarFavorito(String email, String generoFavorito) throws GeneroNoExistenteException {
+        assert baseDeDatos != null;
         Map<String, Genero> mapaGeneros = baseDeDatos.obtenerGeneros();
         Genero genero = mapaGeneros.get(generoFavorito);
         Usuario usuario;
@@ -55,6 +59,7 @@ public class UsuarioNegocioSB implements UsuarioNegocioSBLocal {
 
     @Override
     public void agregarConsola(String email, String codigoConsola) throws ConsolaNoExistenteException {
+        assert baseDeDatos != null;
         Map<String, Consola> mapaConsolas = baseDeDatos.obtenerConsolas();
         Consola consola = mapaConsolas.get(codigoConsola);
         Usuario usuario;
@@ -65,6 +70,12 @@ public class UsuarioNegocioSB implements UsuarioNegocioSBLocal {
         } else {
            throw new ConsolaNoExistenteException(Constantes.codErrorConsolaNoExistenteException, Constantes.mensajeConsolaNoExistenteException);
         }
+    }
+
+    @Override
+    public List<Usuario> obtenerUsuariosPorConsolaGenero(String consola, String genero) {
+        assert baseDeDatos != null;
+        return baseDeDatos.obtenerUsuariosPorConsolaGenero(consola, genero);
     }
 
 }

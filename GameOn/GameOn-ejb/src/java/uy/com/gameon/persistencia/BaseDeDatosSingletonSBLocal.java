@@ -5,6 +5,7 @@
  */
 package uy.com.gameon.persistencia;
 
+import java.util.List;
 import java.util.Map;
 import javax.ejb.Local;
 import uy.com.gameon.dominio.Consola;
@@ -43,5 +44,7 @@ public interface BaseDeDatosSingletonSBLocal {
     Boolean passwordCorrecto(String emailUsuario, String password);
 
     Boolean authTokenValido(String authToken, String emailUsuario);
+
+    List<Usuario> obtenerUsuariosPorConsolaGenero(String consola, String genero);
     
 }

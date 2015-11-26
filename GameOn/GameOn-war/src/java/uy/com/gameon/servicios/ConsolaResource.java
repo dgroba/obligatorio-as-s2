@@ -30,6 +30,7 @@ public class ConsolaResource {
     @Path("/consultar_consolas")
     @Produces(MediaType.APPLICATION_JSON)
     public Response obtenerConsolas() {
+        assert beanConsola != null;
         Map<String, Consola> mapConsolas = beanConsola.obtenerConsolas();
         Gson gson = new Gson();
         List<Consola> consolas = new ArrayList(mapConsolas.values());
